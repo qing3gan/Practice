@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="FacebookToWechat">
+    <output-path>$PROJECT_DIR$/out/artifacts/FacebookToWechat</output-path>
+    <root id="archive" name="FacebookToWechat.jar">
+      <element id="module-output" name="Practice" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/util/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>
