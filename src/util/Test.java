@@ -1,9 +1,8 @@
 package util;
 
-import com.google.common.collect.Sets;
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Agony on 2018/5/25.
@@ -41,5 +40,9 @@ public class Test {
         /*String a = "a ";
         a.trim();
         System.out.println(a.substring(0,a.length()-1)+"b");*/
+        ConcurrentHashMap<String, Object> set = new ConcurrentHashMap<>();
+        set.put("1", new Object());
+        set.put("2", new Object());
+        System.out.println(StringUtils.join(set.keySet().iterator(), ","));
     }
 }
