@@ -1,11 +1,11 @@
-package util;
+package test;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by Agony on 2018/7/6.
  */
-public class ReadWriteLock {
+public class ReadWriteLockTest {
 
     private ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
@@ -30,7 +30,7 @@ public class ReadWriteLock {
     }
 
     public static void main(String[] args) {
-        ReadWriteLock lock = new ReadWriteLock();
+        ReadWriteLockTest lock = new ReadWriteLockTest();
         new Thread(()->{
             while (true){
                 lock.read();
