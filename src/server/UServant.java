@@ -1,4 +1,7 @@
-package util;
+package server;
+
+import util.CloseUtils;
+import util.Constants;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
