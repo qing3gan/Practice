@@ -4,6 +4,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.DefaultCodec;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -35,16 +37,23 @@ public class FlowSortJob {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf = new Configuration();
         Job job = Job.getInstance(conf);
+
         job.setJar("/root/FlowCount.jar");
         job.setJarByClass(FlowSortJob.class);
         job.setMapperClass(FlowSortMapper.class);
-        job.setReducerClass(FlowSortReduce.class);
         job.setMapOutputKeyClass(FlowBean.class);
         job.setMapOutputValueClass(Text.class);
+        conf.setBoolean(Job.MAP_OUTPUT_COMPRESS, true);
+        conf.setClass(Job.MAP_OUTPUT_COMPRESS_CODEC, DefaultCodec.class, CompressionCodec.class);
+        FileInputFormat.setInputPaths(job, "hdfs://hadoop01:9000/flowcount/input/flow.log");
+
+        job.setReducerClass(FlowSortReduce.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(FlowBean.class);
-        FileInputFormat.setInputPaths(job, "hdfs://hadoop01:9000/flowcount/input/flow.log");
+        FileOutputFormat.setCompressOutput(job, true);
+        FileOutputFormat.setOutputCompressorClass(job, (Class<? extends CompressionCodec>) Class.forName("org.apache.hadoop.io.compress.DefaultCodec"));
         FileOutputFormat.setOutputPath(job, new Path("hdfs://hadoop01:9000/flowcount/output"));
+
         boolean exit = job.waitForCompletion(true);
         System.exit(exit ? 0 : 1);
     }
