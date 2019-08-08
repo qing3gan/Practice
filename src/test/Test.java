@@ -1,9 +1,5 @@
 package test;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * Created by Agony on 2018/5/25.
  */
@@ -40,9 +36,15 @@ public class Test {
         /*String a = "a ";
         a.trim();
         System.out.println(a.substring(0,a.length()-1)+"b");*/
-        ConcurrentHashMap<String, Object> set = new ConcurrentHashMap<>();
+        /*ConcurrentHashMap<String, Object> set = new ConcurrentHashMap<>();
         set.put("1", new Object());
         set.put("2", new Object());
-        System.out.println(StringUtils.join(set.keySet().iterator(), ","));
+        System.out.println(StringUtils.join(set.keySet().iterator(), ","));*/
+        /*List<String> list = Arrays.asList("1","2","3","4");
+        Iterator<String> a = list.iterator();
+        Iterator<String> b = list.iterator();
+        System.out.println(a.next());
+        System.out.println(a.next());
+        System.out.println(b.next());*/
     }
 }
