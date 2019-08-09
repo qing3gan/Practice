@@ -34,9 +34,16 @@ public class OrderMapperInnerJoinJob {
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
-            Path[] localCacheFiles = context.getLocalCacheFiles();
-            System.out.println(localCacheFiles[0].toString());
-            FileReader fin = new FileReader(localCacheFiles[0].toString());
+            //local
+//            Path[] localCacheFiles = context.getLocalCacheFiles();
+//            System.out.println(localCacheFiles[0].toString());
+//            FileReader fin = new FileReader(localCacheFiles[0].toString());
+            //file system
+//            FileSystem fs = FileSystem.get(context.getConfiguration());
+//            URI[] cacheFiles = context.getCacheFiles();
+//            InputStreamReader isr = new InputStreamReader(fs.open(new Path(cacheFiles[0].toString())));
+            //symbolic
+            FileReader fin = new FileReader("product");
             BufferedReader bin = new BufferedReader(fin);
             String _line;
             while (null != (_line = bin.readLine())) {
@@ -94,7 +101,7 @@ public class OrderMapperInnerJoinJob {
         FileOutputFormat.setOutputPath(job, new Path("hdfs://hadoop01:9000/order_mapper_join/output"));
 
         job.setNumReduceTasks(0);
-        job.addCacheFile(new URI("hdfs://hadoop01:9000/file/t_product.dat"));
+        job.addCacheFile(new URI("hdfs://hadoop01:9000/file/t_product.dat#product"));
 
         boolean exit = job.waitForCompletion(true);
         System.exit(exit ? 0 : 1);
