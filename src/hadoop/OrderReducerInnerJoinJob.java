@@ -71,6 +71,7 @@ public class OrderReducerInnerJoinJob {
                 System.out.println("reduce object " + orderProductBean);
                 if (OrderProductBean.Origin.PRODUCT.getFileName().equals(orderProductBean.getFileName())) {
                     try {
+                        //Iterable<VALUES> = mapper -> serialize -> deserialize -> reducer [use same object]
                         BeanUtils.copyProperties(productBean, orderProductBean);
                     } catch (Exception e) {
                         e.printStackTrace();
