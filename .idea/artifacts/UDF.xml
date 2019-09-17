@@ -4,7 +4,7 @@
     <root id="archive" name="UDF.jar">
       <element id="module-output" name="Practice" />
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/src/hive/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/src/bigdata/hive/META-INF/MANIFEST.MF" />
       </element>
     </root>
   </artifact>
