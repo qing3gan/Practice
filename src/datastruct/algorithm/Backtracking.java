@@ -1,7 +1,7 @@
 package datastruct.algorithm;
 
 /**
- * 回溯（枚举）
+ * 回溯（枚举，递归树）
  */
 public class Backtracking {
 
@@ -55,7 +55,7 @@ public class Backtracking {
      * 一个背包总的承载重量是Wkg，现有n个物品，每个物品的重量不等且不可分割，在不超重的前提下，让背包中的物品之总重量最大
      */
     private static class ZeroOne {
-        private int maxWeight = Integer.MAX_VALUE;//stop flag
+        private int maxWeight = Integer.MAX_VALUE;//flag
 
         public void f(int i, int sumWeight, int[] items, int n, int weight) {
             //recurse end(backtracking)
@@ -64,6 +64,23 @@ public class Backtracking {
                 System.out.println("maxWeight: " + sumWeight);
                 return;
             }
+            //recurse loop(from 0 to 2^n with cut)
+            f(i + 1, sumWeight, items, n, weight);//0
+            if (sumWeight + items[i] <= weight) {//1(cut)
+                f(i + 1, sumWeight + items[i], items, n, weight);
+            }
+        }
+
+        public void f(int i, int sumWeight, int[] items, int n, int weight, boolean[][] states) {
+            //recurse end(backtracking)
+            if (sumWeight == weight || i == n) {
+                if (sumWeight > maxWeight) maxWeight = sumWeight;
+                System.out.println("maxWeight: " + sumWeight);
+                return;
+            }
+            //states
+            if (states[i][sumWeight]) return;
+            states[i][sumWeight] = true;
             //recurse loop(from 0 to 2^n with cut)
             f(i + 1, sumWeight, items, n, weight);//0
             if (sumWeight + items[i] <= weight) {//1(cut)
@@ -116,11 +133,15 @@ public class Backtracking {
     public static void main(String[] args) {
 //        EightQueues eightQueues = new EightQueues();
 //        eightQueues.cal8Queues(0);
-//        ZeroOne zeroOne = new ZeroOne();
-//        int[] items = new int[]{1, 3, 6};
-//        zeroOne.f(0, 0, items, 3, 8);
-        Pattern pattern = new Pattern("?bcd");
-        System.out.println(pattern.match("abcd"));
-        System.out.println(pattern.match("bbcd"));
+        ZeroOne zeroOne = new ZeroOne();
+        int[] items = new int[]{2, 2, 4, 6, 3};
+        int n = 5;
+        int weight = 9;
+        zeroOne.f(0, 0, items, n, weight);
+        System.out.println();
+        zeroOne.f(0, 0, items, n, weight, new boolean[n][weight + 1]);
+//        Pattern pattern = new Pattern("?bcd");
+//        System.out.println(pattern.match("abcd"));
+//        System.out.println(pattern.match("bbcd"));
     }
 }
