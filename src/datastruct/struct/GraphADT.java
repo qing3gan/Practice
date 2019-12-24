@@ -19,7 +19,11 @@ public class GraphADT {
         }
     }
 
-    public void addEdge(int s, int t) {//non-direct graph(start,end)
+    public void addDirectEdge(int s, int t) {
+        adj[s].add(t);
+    }
+
+    public void addNonDirectEdge(int s, int t) {//non-direct graph(start,end)
         adj[s].add(t);
         adj[t].add(s);
     }
@@ -93,16 +97,96 @@ public class GraphADT {
         System.out.print(t + "->");
     }
 
+    /**
+     * 有向无环图，拓扑排序
+     * <p>
+     * 至少有一个入度为0的顶点
+     */
+    public void topoSortByKahn() {
+        int[] inDegree = new int[v];
+        //in degree+
+        for (int i = 0; i < v; i++) {
+            for (int j = 0; j < adj[i].size(); j++) {
+                int w = adj[i].get(j);//i->w
+                inDegree[w]++;
+            }
+        }
+        //0 in degree
+        LinkedList<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < v; i++) {
+            if (inDegree[i] == 0) {
+                queue.add(i);
+            }
+        }
+        //in degree-
+        while (!queue.isEmpty()) {
+            int i = queue.remove();
+            System.out.print("->" + i);
+            for (int j = 0; j < adj[i].size(); j++) {
+                int w = adj[i].get(j);
+                inDegree[w]--;
+                if (inDegree[w] == 0) {
+                    queue.add(w);
+                }
+            }
+        }
+    }
+
+    /**
+     * 逆邻接表
+     */
+    public void topoSortByDfs() {
+        //inverse adjacency list
+        LinkedList<Integer>[] inverseAdj = new LinkedList[v];
+        for (int i = 0; i < v; i++) {
+            inverseAdj[i] = new LinkedList<>();
+        }
+        for (int i = 0; i < v; i++) {
+            for (int j = 0; j < adj[i].size(); j++) {
+                int w = adj[i].get(j);//i->w
+                inverseAdj[w].add(i);//w->i
+            }
+        }
+        //dfs
+        boolean[] visited = new boolean[v];
+        for (int i = 0; i < v; i++) {
+            if (!visited[i]) {
+                visited[i] = true;
+                topoDfs(i, inverseAdj, visited);
+            }
+        }
+    }
+
+    private void topoDfs(int vertex, LinkedList<Integer>[] inverse, boolean[] visited) {
+        for (int i = 0; i < inverse[vertex].size(); i++) {
+            int w = inverse[vertex].get(i);
+            if (visited[w]) {
+                continue;
+            }
+            visited[w] = true;
+            topoDfs(w, inverse, visited);
+        }
+        System.out.print("->" + vertex);
+    }
+
     public static void main(String[] args) {
         GraphADT graph = new GraphADT(6);
-        graph.addEdge(0, 1);
-        graph.addEdge(0, 2);
-        graph.addEdge(1, 3);
-        graph.addEdge(2, 3);
-        graph.addEdge(1, 5);
-        graph.addEdge(2, 4);
+        /*graph.addNonDirectEdge(0, 1);
+        graph.addNonDirectEdge(0, 2);
+        graph.addNonDirectEdge(1, 3);
+        graph.addNonDirectEdge(2, 3);
+        graph.addNonDirectEdge(1, 5);
+        graph.addNonDirectEdge(2, 4);
         graph.bfs(0, 5);
         System.out.println();
-        graph.dfs(0, 4);
+        graph.dfs(0, 4);*/
+        graph.addDirectEdge(0, 2);
+        graph.addDirectEdge(2, 1);
+        graph.addDirectEdge(2, 4);
+        graph.addDirectEdge(3, 2);
+        graph.addDirectEdge(5, 4);
+        graph.topoSortByKahn();
+        System.out.println();
+        graph.topoSortByDfs();
     }
 }
