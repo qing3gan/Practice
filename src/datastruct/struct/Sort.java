@@ -300,7 +300,7 @@ public class Sort {
     }
 
     static void heapify(int[] a, int size, int index) {
-        //from top to bottom heapify
+        //from up to down heapify
         while (true) {//compare with left and right
             int maxPos = index;
             if (2 * index <= size && a[index] < a[2 * index]) maxPos = 2 * index;//left

@@ -6,9 +6,17 @@ package datastruct.struct;
 public class HeapADT {
 
     private int[] array;//backup(big top heap)
-    private int capacity;
+    private int capacity;//bounded
     private int size;
 
+    /**
+     * index from 1
+     * add array[size+1]
+     * remove array[1]
+     *                  root:array[1]
+     *                  /          \
+     * left:array[2*index]      right:array[2*index+1]
+     */
     public HeapADT(int capacity) {
         array = new int[capacity + 1];
         this.capacity = capacity;
@@ -17,23 +25,26 @@ public class HeapADT {
 
     public void insert(int data) {
         if (size >= capacity) return;
-        int index = ++size;
-        array[index] = data;
-        //heapify from bottom to top
+        array[++size] = data;
+        heapifyDownToUp(size);
+    }
+
+    public void removeMax() {//remove root
+        if (size == 0) return;
+        array[1] = array[size--];
+        heapifyUpToDown(size);
+    }
+
+    private void heapifyDownToUp(int index) {
+        //heapify from down to up
         while (index / 2 > 0 && array[index] > array[index / 2]) {//compare with parent
             swap(array, index, index / 2);
             index = index / 2;
         }
     }
 
-    public void removeMax() {//remove root
-        if (size == 0) return;
-        array[1] = array[size--];
-        heapify(size);
-    }
-
-    private void heapify(int size) {
-        //from top to bottom heapify
+    private void heapifyUpToDown(int size) {
+        //from up to down heapify
         int index = 1;
         while (true) {//compare with left and right
             int maxPos = index;

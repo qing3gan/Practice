@@ -4,10 +4,13 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * 图（邻接矩阵，邻接表）
+ * 图（顶点，边：邻接表）
  */
 public class GraphADT {
 
+    /**
+     * 无权图
+     */
     private int v;//vertex number
     private LinkedList<Integer>[] adj;//adjacency list
 
@@ -17,18 +20,22 @@ public class GraphADT {
         for (int i = 0; i < v; i++) {
             adj[i] = new LinkedList<>();
         }
+        eadj = new LinkedList[v];
+        for (int i = 0; i < v; i++) {
+            eadj[i] = new LinkedList<>();
+        }
     }
 
-    public void addDirectEdge(int s, int t) {
+    public void addDirectEdge(int s, int t) {//direct graph(start,terminal)
         adj[s].add(t);
     }
 
-    public void addNonDirectEdge(int s, int t) {//non-direct graph(start,end)
+    public void addNonDirectEdge(int s, int t) {//non-direct graph(start,terminal)
         adj[s].add(t);
         adj[t].add(s);
     }
 
-    public void bfs(int s, int t) {//breadth-first-search(start,end)
+    public void bfs(int s, int t) {//breadth-first-search(start,terminal)
         if (s == t) return;//find
         //init
         boolean[] visited = new boolean[v];//visited vertex
@@ -65,7 +72,7 @@ public class GraphADT {
         //init
         found = false;
         boolean[] visited = new boolean[v];//visited vertex
-        int[] prev = new int[v];//preview vertex(s -> t reverse path)
+        int[] prev = new int[v];//preview vertex(s -> t reverse path, prev[t]=s)
         for (int i = 0; i < v; i++) {
             prev[i] = -1;
         }
@@ -169,6 +176,140 @@ public class GraphADT {
         System.out.print("->" + vertex);
     }
 
+    /**
+     * 有权图
+     */
+    private class Edge {
+        public int sid;//start
+        public int tid;//terminal
+        public int w;//weight
+
+        public Edge(int sid, int tid, int w) {
+            this.sid = sid;
+            this.tid = tid;
+            this.w = w;
+        }
+    }
+
+    private class Vertex {//for dijkstra
+        public int id;//vertex
+        public int dist;//distance
+
+        public Vertex(int id, int dist) {
+            this.id = id;
+            this.dist = dist;
+        }
+    }
+
+    private LinkedList<Edge>[] eadj;
+
+    public void addEdge(int s, int t, int w) {//direct weight graph(start,terminal,weight)
+        this.eadj[s].add(new Edge(s, t, w));
+    }
+
+    private class PriorityUpdateQueue {
+        private Vertex[] nodes;//vertex.dist small top heap
+        private int capacity;//bounded
+        private int size;
+
+        public PriorityUpdateQueue(int capacity) {
+            nodes = new Vertex[capacity + 1];
+            this.capacity = capacity;
+            size = 0;
+        }
+
+        public void add(Vertex vertex) {
+            if (size >= capacity) return;
+            nodes[++size] = vertex;
+            heapifyDownToUp(size);
+        }
+
+        public Vertex poll() {
+            if (size == 0) return null;
+            Vertex vertex = nodes[1];
+            nodes[1] = nodes[size--];
+            heapifyUpToDown(size);
+            return vertex;
+        }
+
+        public void update(Vertex vertex) {
+            for (int i = 1; i <= size; i++) {
+                if (nodes[i].id == vertex.id) {
+                    nodes[i].dist = vertex.dist;
+                    heapifyDownToUp(i);
+                    break;
+                }
+            }
+        }
+
+        public boolean isEmpty() {
+            return size == 0;
+        }
+
+        private void heapifyUpToDown(int size) {
+            //from up to down heapify
+            int index = 1;
+            while (true) {//compare with left and right
+                int minPos = index;
+                if (2 * index <= size && nodes[2 * index] != null && nodes[index].dist > nodes[2 * index].dist)
+                    minPos = 2 * index;//left
+                if (2 * index + 1 <= size && nodes[2 * index + 1] != null && nodes[index].dist > nodes[2 * index + 1].dist)
+                    minPos = 2 * index + 1;//right
+                if (minPos == index) break;//smallest
+                swap(nodes, index, minPos);
+                index = minPos;
+            }
+        }
+
+        private void heapifyDownToUp(int size) {
+            //heapify from down to up
+            while (size / 2 > 0 && nodes[size].dist < nodes[size / 2].dist) {//compare with parent
+                swap(nodes, size, size / 2);
+                size = size / 2;
+            }
+        }
+
+        private void swap(Vertex[] a, int i, int j) {
+            Vertex tmp = a[i];
+            a[i] = a[j];
+            a[j] = tmp;
+        }
+    }
+
+    public void dijkstra(int s, int t) {//from s to t shortest path
+        int[] prev = new int[v];//preview vertex(s -> t reverse path, prev[t]=s)
+        Vertex[] vertexes = new Vertex[v];//update s -> i shortest distance
+        for (int i = 0; i < v; i++) {
+            vertexes[i] = new Vertex(i, Integer.MAX_VALUE);//init s -> i distance
+        }
+        PriorityUpdateQueue queue = new PriorityUpdateQueue(v);//dynamic programing
+        boolean[] inqueue = new boolean[v];//avoid requeue
+        vertexes[s].dist = 0;//init s -> s distance
+        queue.add(vertexes[s]);
+        inqueue[s] = true;
+        while (!queue.isEmpty()) {//traverse vertex
+            Vertex minVertex = queue.poll();
+            if (minVertex.id == t) break;
+            for (int i = 0; i < eadj[minVertex.id].size(); i++) {
+                //minVertex -> edge -> nextVertex
+                Edge edge = eadj[minVertex.id].get(i);
+                Vertex nextVertex = vertexes[edge.tid];
+                //traverse edge
+                if (minVertex.dist + edge.w < nextVertex.dist) {
+                    nextVertex.dist = minVertex.dist + edge.w;
+                    prev[nextVertex.id] = minVertex.id;
+                    if (inqueue[nextVertex.id]) {
+                        queue.update(nextVertex);
+                    } else {
+                        queue.add(nextVertex);
+                        inqueue[nextVertex.id] = true;
+                    }
+                }
+            }
+        }
+        printPath(prev, s, t);
+    }
+
     public static void main(String[] args) {
         GraphADT graph = new GraphADT(6);
         /*graph.addNonDirectEdge(0, 1);
@@ -180,13 +321,22 @@ public class GraphADT {
         graph.bfs(0, 5);
         System.out.println();
         graph.dfs(0, 4);*/
-        graph.addDirectEdge(0, 2);
+        /*graph.addDirectEdge(0, 2);
         graph.addDirectEdge(2, 1);
         graph.addDirectEdge(2, 4);
         graph.addDirectEdge(3, 2);
         graph.addDirectEdge(5, 4);
         graph.topoSortByKahn();
         System.out.println();
-        graph.topoSortByDfs();
+        graph.topoSortByDfs();*/
+        graph.addEdge(0, 1, 4);
+        graph.addEdge(0, 2, 2);
+        graph.addEdge(1, 3, 1);
+        graph.addEdge(2, 1, 1);
+        graph.addEdge(2, 3, 2);
+        graph.addEdge(3, 4, 1);
+        graph.addEdge(3, 5, 3);
+        graph.addEdge(4, 5, 3);
+        graph.dijkstra(0, 5);
     }
 }
