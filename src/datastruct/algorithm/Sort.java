@@ -1,4 +1,4 @@
-package datastruct.struct;
+package datastruct.algorithm;
 
 public class Sort {
 

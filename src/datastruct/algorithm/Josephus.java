@@ -1,4 +1,4 @@
-package datastruct.struct;
+package datastruct.algorithm;
 
 /**
  * 约瑟夫问题

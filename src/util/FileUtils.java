@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class FileUtil {
+public class FileUtils {
 
     public static void main(String[] args) throws IOException {
         String source = "C:\\Users\\Agony\\Documents\\VanDyke\\Config\\Sessions\\joom";
